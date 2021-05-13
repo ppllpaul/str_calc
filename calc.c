@@ -117,6 +117,7 @@ int do_calc(char* c_in)
 				return -1;
 			}
 			l_num = atoi(num);
+			memset(num,0,5);
 			op = type;
 			count = 0;
 		}
