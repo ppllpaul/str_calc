@@ -4,6 +4,9 @@
 #include<stdlib.h>
 #include<string.h>
 #include<sys/types.h>
+#include<iostream>
+#include<string>
+using namespace std;
 
 enum CALC_C_TYPE
 {
@@ -32,7 +35,7 @@ int calc(int op,int l_num,int r_num,int* res);
 int main(int argc,char *argv[])
 {
 	int ret = 0;
-	char str[101] = {0};
+	string str;
 	int len = 0;
 	/*struct cnode *p;
 	if(argc > 2)
@@ -43,23 +46,18 @@ int main(int argc,char *argv[])
 	
 	printf("welcome to use my calc,here is some tips\n");
 	printf("1,please do not type more than 100 characters\n");
-	printf("2,input number max 99999\n");
+	printf("2,if the number is too long,we cannot ensure it's result\n");
 	printf("please input your calc character,end with enter:\n");
 	
 	while(1) {
-		memset(str,0,101);
-		fgets(str, 101, stdin);
-		len = strlen(str);
-		if(len == 101 && str[len-1] != '\n') {
-			printf("input error,len more than 100,pleese re-enter:\n");
-			memset(str,0,101);
-			continue;
-		}
-		if(len < 4) {
+		str.clear();
+		getline(cin,str);
+		len = str.size();
+		if(len < 3) {
 			printf("input too short,please re-enter:\n");
 			continue;
 		}
-		ret = do_calc(str);
+		ret = do_calc((char*)str.c_str());
 		sleep(1);
 	}
 	
@@ -70,7 +68,7 @@ int do_calc(char* c_in)
 {
 	int i = 0; //current pos
 	int pos = 0;//last pos
-	char num[5] = {0}; //number char
+	string num; //number char
 	int count = 0; //number char count
 	int type = 0;  //calc char type
 	int len = strlen(c_in);
@@ -86,29 +84,12 @@ int do_calc(char* c_in)
 			return -1;
 		}
 		else if(type == NUM) {
-			num[count] = c_in[i];
+			//num.append(c_in[i]);
+			num = num + c_in[i];
 			count++;
 			if(count > 5) {
 				printf("num too large,not support\n");
 				return -1;
-			}
-		}
-		else if(type == END) {
-			if(op == 0) {
-				printf("there is no calc operator,please re-enter:\n");
-				return -1;
-			}
-			if(count == 0) {
-				printf("there is no right value,please re-enter:\n");
-				return -1;
-			}
-			r_num = atoi(num);
-			ret = calc(op,l_num,r_num,&res);
-			if(ret<0)
-				printf("do calc failed please check your input\n");
-			else {
-				printf("calc result is %d\n",res);
-				printf("another input again:\n");
 			}
 		}
 		else {
@@ -116,11 +97,27 @@ int do_calc(char* c_in)
 				printf("there is no left value,please re-enter:\n");
 				return -1;
 			}
-			l_num = atoi(num);
-			memset(num,0,5);
+			l_num = atoi(num.c_str());
+			num.clear();
 			op = type;
 			count = 0;
 		}
+	}
+	if(op == 0) {
+		printf("there is no calc operator,please re-enter:\n");
+		return -1;
+	}
+	if(count == 0) {
+		printf("there is no right value,please re-enter:\n");
+		return -1;
+	}
+	r_num = atoi(num.c_str());
+	ret = calc(op,l_num,r_num,&res);
+	if(ret<0)
+		printf("do calc failed please check your input\n");
+	else {
+		printf("calc result is %d\n",res);
+		printf("another input again:\n");
 	}
 	
 	return 0;
@@ -152,6 +149,8 @@ int get_char_type(char c)
 		case '7':
 		case '8':
 		case '9':
+		case ' ':
+		case '\t':
 			return NUM;
 		case '\n':
 			return END;
@@ -180,6 +179,10 @@ int calc(int op,int l_num,int r_num,int* res)
 			*res = l_num * r_num;
 			break;
 		case DIV:
+			if(r_num == 0) {
+				printf("r_num cannot be 0\n");
+				return -1;
+			}
 			*res = l_num / r_num;
 			break;
 		default:
