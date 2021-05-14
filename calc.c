@@ -17,6 +17,7 @@ enum CALC_C_TYPE
 	DIV,
 	BKL, //left brackets
 	BKR,  //right brackets
+	TAB, //blank space or tab
 	END
 };
 
@@ -69,7 +70,6 @@ int do_calc(char* c_in)
 	int i = 0; //current pos
 	int pos = 0;//last pos
 	string num; //number char
-	int count = 0; //number char count
 	int type = 0;  //calc char type
 	int len = strlen(c_in);
 	int r_num = 0;
@@ -86,28 +86,25 @@ int do_calc(char* c_in)
 		else if(type == NUM) {
 			//num.append(c_in[i]);
 			num = num + c_in[i];
-			count++;
-			if(count > 5) {
-				printf("num too large,not support\n");
-				return -1;
-			}
+		}
+		else if(type == TAB) {
+			continue;
 		}
 		else {
-			if(count == 0) {
+			if(num.size() == 0) {
 				printf("there is no left value,please re-enter:\n");
 				return -1;
 			}
 			l_num = atoi(num.c_str());
 			num.clear();
 			op = type;
-			count = 0;
 		}
 	}
 	if(op == 0) {
 		printf("there is no calc operator,please re-enter:\n");
 		return -1;
 	}
-	if(count == 0) {
+	if(num.size() == 0) {
 		printf("there is no right value,please re-enter:\n");
 		return -1;
 	}
@@ -149,9 +146,10 @@ int get_char_type(char c)
 		case '7':
 		case '8':
 		case '9':
+			return NUM;
 		case ' ':
 		case '\t':
-			return NUM;
+			return TAB;
 		case '\n':
 			return END;
 		default:
