@@ -32,6 +32,7 @@ enum CALC_C_TYPE
 int do_calc(char* c_in);
 int get_char_type(char c);
 int calc(int op,int l_num,int r_num,int* res);
+static int last_res = 0;
 
 int main(int argc,char *argv[])
 {
@@ -54,7 +55,7 @@ int main(int argc,char *argv[])
 		str.clear();
 		getline(cin,str);
 		len = str.size();
-		if(len < 3) {
+		if(len < 2) {
 			printf("input too short,please re-enter:\n");
 			continue;
 		}
@@ -92,12 +93,14 @@ int do_calc(char* c_in)
 		}
 		else {
 			if(num.size() == 0) {
-				printf("there is no left value,please re-enter:\n");
-				return -1;
+				l_num = last_res;
+				op = type;
 			}
-			l_num = atoi(num.c_str());
-			num.clear();
-			op = type;
+			else {
+				l_num = atoi(num.c_str());
+                        	num.clear();
+                        	op = type;
+			}
 		}
 	}
 	if(op == 0) {
@@ -113,6 +116,7 @@ int do_calc(char* c_in)
 	if(ret<0)
 		printf("do calc failed please check your input\n");
 	else {
+		last_res = res;
 		printf("calc result is %d\n",res);
 		printf("another input again:\n");
 	}
